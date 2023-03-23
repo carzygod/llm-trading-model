@@ -7,4 +7,4 @@
 * Model Verfication
   * GPT 3.5
   * GPT 4
-  * New
+  * New Bing
