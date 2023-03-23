@@ -1,0 +1,115 @@
+var dateTime = require('node-datetime');
+var events = require('../temp/mock.json');
+events = events.reverse()
+var rawTrade = require('../temp/trade.json');
+
+var baseTime = 0;
+var baseInterval = 3600;
+baseTime = (rawTrade[0][0])/1000;
+
+var history = []
+var total =
+{
+    reward : 0 ,
+    rate : 0 ,
+}
+
+var trade = 
+{
+    action : 0,
+    in:0 ,
+    inTime:0 , 
+    inEvent:0,
+    out:0 ,
+    outTime:0,
+    outEvent:0,
+    reward : 0 ,
+    rate : 0 ,
+
+}
+
+function matchEvent(data)
+{
+    return ((data-baseTime)/baseInterval).toFixed(0);
+}
+
+function oldPredict(data)
+{
+    var alarmRate = 0.55;
+    var long = (data.status.long)/(data.status.long+data.status.short);
+    var short = (data.status.short)/(data.status.short+data.status.long);
+    // console.log(long , "," , short)
+    if(long > alarmRate)
+    {
+        return 1;
+    }
+
+    if(short > alarmRate)
+    {
+        return 2;
+    }
+
+    return 0;
+}
+
+function action(data)
+{
+    var _in = Number(matchEvent(data.time))
+    var _out = _in+1;
+    if(_out > rawTrade.length-3)
+    {
+        return false;
+    }
+    _out = rawTrade[_out][4];
+    _in = rawTrade[_in][4];
+    var pre = oldPredict(data)
+
+    // console.log(data)
+
+    if(pre==1)
+    {
+        //make long
+        history.push(
+            {
+                event:data,
+                inprice : _in,
+                outprice : _out,
+                reward : _out-_in ,
+                rate : (_out-_in)/_in
+            }
+        )
+        total.reward+=_out-_in;
+        total.rate+=(_out-_in)/_in
+    }
+
+    if(pre==2)
+    {
+        //make short 
+        history.push(
+            {
+                event:data,
+                inprice : _in,
+                outprice : _out,
+                reward : _in-_out,
+                rate : (_in-_out)/_in
+            }
+        )
+        total.reward+=_in-_out;
+        total.rate+=(_in-_out)/_in
+    }
+}
+function init ()
+{
+    events.forEach(element => {
+        action(element)
+    });
+
+    // console.log(
+    //     JSON.stringify(
+    //         history
+    //     )
+    // )
+    console.log(total)
+}
+
+init()
