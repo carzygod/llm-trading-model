@@ -37,8 +37,8 @@ function matchEvent(data)
 
 function oldPredict(data)
 {
-    var alarmRate = 0.5;
-    var influenceRate = 700;
+    var alarmRate = 0.6;
+    var influenceRate = 0;
     var long = (data.status.long)/(data.status.long+data.status.short);
     var short = (data.status.short)/(data.status.short+data.status.long);
     if(long > alarmRate&&(data.status.long+data.status.short) >influenceRate)
@@ -110,6 +110,12 @@ function action(data)
     if(trade.lock)
     {
         if(pre!=trade.action){
+            if(pre==0)
+            {
+                return 0 ;
+            }
+
+
             if(trade.action==1)
             {
                 sellLong(data,

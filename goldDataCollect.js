@@ -54,10 +54,10 @@ function analyze(data)
 async function loop(){
     await init();
     //current/20
-    for(var i=0; i<(50);i++)
+    for(var i=0; i<(500);i++)
     {
         await init();
-        await tool.sleep(1000)
+        await tool.sleep(3000)
     }
     console.log(
         JSON.stringify(db)
