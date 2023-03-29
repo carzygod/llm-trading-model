@@ -5,9 +5,9 @@ events = events.reverse()
 var rawTrade = require('../temp/trade.json');
 
 var baseTime = 0;
-var baseInterval = 3600;
+var baseInterval = 60;
 baseTime = (rawTrade[0][0])/1000;
-
+var timeLimit = 3600;
 var history = []
 var total =
 {
@@ -109,8 +109,7 @@ function action(data)
     var pre = oldPredict(data)
     if(trade.lock)
     {
-        if(pre!=trade.action)
-        {
+        if(pre!=trade.action){
             if(pre==0)
             {
                 return 0 ;

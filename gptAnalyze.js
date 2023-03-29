@@ -3,7 +3,7 @@
 const { json } = require('express');
 var dateTime = require('node-datetime');
 var events = require('../temp/mock.json');
-events = events.reverse()
+events = events
 var rawTrade = require('../temp/trade.json');
 var api = require('./utils/apis.js');
 var baseTime = 0;
@@ -166,7 +166,7 @@ async function appendData(data)
 async function init ()
 {
     //events.length
-    for(var i = 39 ; i < events.length ; i ++)
+    for(var i = 1082 ; i < events.length ; i ++)
     {
         var element = events[i];
         var meta = element.content;

@@ -31,18 +31,22 @@ function analyze(data)
             {
     
             }else{
-                db.push(
-                    {
-                        id:element.id,
-                        content:title,
-                        time:element.created_at,
-                        status:{
-                            long:element.up_counts,
-                            short:element.down_counts
+                if(title.split("破产").length > 1 ||title.split("加息").length > 1 || title.split("挤兑").length > 1 || title.split("被盗").length > 1||title.split("黑客").length > 1)
+                {
+                    db.push(
+                        {
+                            id:element.id,
+                            content:title,
+                            time:element.created_at,
+                            status:{
+                                long:element.up_counts,
+                                short:element.down_counts
+                            }
+            
                         }
-        
-                    }
-                )
+                    )
+                }
+
             }
         }
 

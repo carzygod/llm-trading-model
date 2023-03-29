@@ -40,7 +40,7 @@ function matchEvent(data)
 function oldPredict(data)
 {
     var alarmRate = 0.5;
-    var influenceRate = 50;
+    var influenceRate = 0;
 
     if(data.status.direction == "利好" && Number(data.status.influence) > influenceRate)
     {
