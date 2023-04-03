@@ -123,7 +123,11 @@ function action(data)
                         in:_in,
                         out:_in,
                     });
-                    return action(data)
+                    if(data.real)
+                    {
+                        return action(data)
+                    }
+                    
             }
 
             if(trade.action==2)
@@ -133,7 +137,11 @@ function action(data)
                         in:_in,
                         out:_in,
                     });
-                    return action(data)
+                    if(data.real)
+                    {
+                        return action(data)
+                    }
+                    // return action(data)
             }
         }
         
@@ -163,6 +171,13 @@ function action(data)
 function init ()
 {
     events.forEach(element => {
+        element.real = true;
+        action(element)
+        var temp = element.status.long
+        element.status.long = element.status.short;
+        element.status.short = temp;
+        element.time+=14400;
+        element.real = false;
         action(element)
     });
 

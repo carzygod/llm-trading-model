@@ -31,7 +31,7 @@ function analyze(data)
             {
     
             }else{
-                if(title.split("破产").length > 1 ||title.split("加息").length > 1 || title.split("挤兑").length > 1 || title.split("被盗").length > 1||title.split("黑客").length > 1)
+                if(title.split("破产").length > 1 ||title.split("加息").length > 1 || title.split("调查").length > 1 || title.split("交易所").length > 1||title.split("巨鲸").length > 1)
                 {
                     db.push(
                         {
