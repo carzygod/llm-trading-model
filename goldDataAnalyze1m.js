@@ -4,6 +4,10 @@ var events = require('../temp/mock.json');
 events = events.reverse()
 var rawTrade = require('../temp/trade.json');
 
+const _long = 1;
+const _short = 2;
+
+var feeRate = 0
 var baseTime = 0;
 var baseInterval = 60;
 baseTime = (rawTrade[0][0])/1000;
@@ -43,12 +47,12 @@ function oldPredict(data)
     var short = (data.status.short)/(data.status.short+data.status.long);
     if(long > alarmRate&&(data.status.long+data.status.short) >influenceRate)
     {
-        return 1;
+        return  _long;
     }
 
     if(short > alarmRate&&(data.status.long+data.status.short) >influenceRate)
     {
-        return 2;
+        return _short;
     }
 
     return 0;
@@ -56,7 +60,7 @@ function oldPredict(data)
 
 function buyLong(data,meta){
     trade.lock = true ; 
-    trade.action = 1 ;
+    trade.action = _long ;
     trade.in = meta.in;
     trade.inTime = data.time;
     trade.inEvent = data.content;
@@ -71,13 +75,13 @@ function sellLong(data,meta){
     trade.reward = trade.in - trade.out;
     trade.rate = (trade.in - trade.out)/trade.in
     total.reward+=trade.reward;
-    total.rate += trade.rate;
+    total.rate += trade.rate - feeRate;
     history.push(JSON.parse(JSON.stringify(trade)))
     return 0 ;
 }
 function buyShort(data,meta){
     trade.lock = true ; 
-    trade.action = 2 ;
+    trade.action = _short ;
     trade.in = meta.in;
     trade.inTime = data.time;
     trade.inEvent = data.content;
@@ -91,7 +95,7 @@ function sellShort(data,meta){
     trade.reward = trade.out-trade.in ;
     trade.rate = (trade.out-trade.in)/trade.in
     total.reward+=trade.reward;
-    total.rate += trade.rate;
+    total.rate += trade.rate - feeRate;
     history.push(JSON.parse(JSON.stringify(trade)))
         return 0 ;
 }
@@ -116,7 +120,7 @@ function action(data)
             }
 
 
-            if(trade.action==1)
+            if(trade.action==_long)
             {
                 sellLong(data,
                     {
@@ -130,7 +134,7 @@ function action(data)
                     
             }
 
-            if(trade.action==2)
+            if(trade.action==_short)
             {
                 sellShort(data,
                     {
@@ -146,7 +150,7 @@ function action(data)
         }
         
     }else{
-        if(pre==1)
+        if(pre==_long)
         {
             //make long
             return buyLong(data,
@@ -156,7 +160,7 @@ function action(data)
                 });
         }
 
-        if(pre==2)
+        if(pre==_short)
         {
             //make short 
             return buyShort(data,

@@ -7,14 +7,18 @@ events = events.reverse()
 var rawTrade = require('../temp/trade.json');
 
 var baseTime = 0;
-var baseInterval = 3600;
+var baseInterval = 60;
+const holdingTime = 3600
 baseTime = (rawTrade[0][0])/1000;
 
 var history = []
 var total =
 {
     reward : 0 ,
-    rate : 0 ,
+    roi : 0 ,
+    tradeCount : 0,
+    winRate : 0 ,
+
 }
 
 var trade = 
@@ -40,14 +44,18 @@ function matchEvent(data)
 function oldPredict(data)
 {
     var alarmRate = 0.5;
-    var influenceRate = 0;
+    var influenceRate = 70;
 
-    if(data.status.direction == "利好" && Number(data.status.influence) > influenceRate)
+    if(
+        (data.status.direction == "利好" || data.status.direction == "long" || data.status.direction == "positive")
+         && Number(data.status.influence) > influenceRate)
     {
         return 1;
     }
 
-    if(data.status.direction == "利空" && Number(data.status.influence) > influenceRate)
+    if(
+        (data.status.direction == "利空"|| data.status.direction == "short"|| data.status.direction == "negative")
+     && Number(data.status.influence) > influenceRate)
     {
         return 2;
     }
@@ -70,9 +78,16 @@ function sellLong(data,meta){
     trade.outEvent = data.content;
     trade.reward = trade.in - trade.out;
     trade.rate = (trade.in - trade.out)/trade.in
-    total.reward+=trade.reward;
-    total.rate += trade.rate;
     history.push(JSON.parse(JSON.stringify(trade)))
+
+    //total data collect
+    total.reward+=trade.reward;
+    total.roi += trade.rate;
+    total.tradeCount++;
+    if(trade.reward<0)
+    {
+        total.winRate++;
+    }
     return 0 ;
 }
 function buyShort(data,meta){
@@ -90,17 +105,23 @@ function sellShort(data,meta){
     trade.outEvent = data.content;
     trade.reward = trade.out-trade.in ;
     trade.rate = (trade.out-trade.in)/trade.in
-    total.reward+=trade.reward;
-    total.rate += trade.rate;
     history.push(JSON.parse(JSON.stringify(trade)))
-        return 0 ;
+    //total data collect
+    total.reward+=trade.reward;
+    total.roi += trade.rate;
+    total.tradeCount++;
+    if(trade.reward<0)
+    {
+        total.winRate++;
+    }
+    return 0 ;
 }
 
 function action(data)
 {
     var _in = Number(matchEvent(data.time))
     var _out = _in+1;
-    if(_out > rawTrade.length-3)
+    if(_out > rawTrade.length-(3))
     {
         return false;
     }
@@ -160,14 +181,35 @@ function init ()
         action(element)
     });
 
+    // events.forEach(element => {
+    //     element.real = true;
+    //     action(element)
+    //     if(
+    //         (element.status.direction == "利好" || element.status.direction == "long" || element.status.direction == "positive")
+    //         )
+    //     {
+    //         element.status.direction = "short"
+    //     }
+    
+    //     if(
+    //         (element.status.direction == "利空"|| element.status.direction == "short"|| element.status.direction == "negative")
+    //         )
+    //     {
+    //         element.status.direction = "long"
+    //     }
+    //     element.time+=holdingTime;
+    //     element.real = false;
+    //     action(element)
+    // });
+
     console.log(
         JSON.stringify(
             history
         )
     )
-
+    total.winRate = total.winRate/total.tradeCount
     console.log(total)
-    console.log(history.length)
+    // console.log(history.length)
 }
 
 init()

@@ -166,7 +166,7 @@ async function appendData(data)
 async function init ()
 {
     //events.length
-    for(var i = 1082 ; i < events.length ; i ++)
+    for(var i = 950 ; i < events.length ; i ++)
     {
         var element = events[i];
         var meta = element.content;
@@ -179,6 +179,7 @@ async function init ()
                 element
             )+","
         )
+        console.log(i);
         await tool.sleep(5000)
     }
 }

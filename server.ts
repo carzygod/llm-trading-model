@@ -1,12 +1,15 @@
-var express = require('express');
+import express = require('express');
 const dotenv = require('dotenv');
 dotenv.config();
-var model = require("./model.json");
+var model = (require("./model.js")).models;
 import { ChatGPTAPI } from 'chatgpt'
-var app = express()
+const app: express.Application = express();
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 const api = new ChatGPTAPI(
     { 
-        apiBaseUrl:"https://chat.swaper.fun",
+        apiBaseUrl:"https://api.chatanywhere.com.cn",
         apiKey: process.env.OPENAI_API_KEY
     }
     )
@@ -29,6 +32,7 @@ async function doReq(conversationId,id,i,data) {
 }
 async function init ()
 {
+    console.log(model)
     for(var i = 0 ; i < model.length ; i++)
     {
         var element = model[i];
@@ -55,17 +59,18 @@ function delay(ms: number) {
 app.get('/role',async function(req, res) {
     var role = req.query.role;
     var data = req.query.data;
+    var ret = (await router(role,data));
     await response(200,
-        (await router(role,data))
+        ret
         ,res);
   })
 
-async function response(code,data,res){
-    await res.send({
+function response(code,data,res){
+    res.send({
         "code":code,
         "data":data
         });
-    await res.end();
+    // await res.end();
     return 0;
 }
 

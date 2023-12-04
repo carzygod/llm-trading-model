@@ -31,7 +31,19 @@ function analyze(data)
             {
     
             }else{
-                if(title.split("破产").length > 1 ||title.split("加息").length > 1 || title.split("调查").length > 1 || title.split("交易所").length > 1||title.split("巨鲸").length > 1)
+                if(
+                title.split("破产").length > 1 ||
+                title.split("加息").length > 1 || 
+                title.split("调查").length > 1 || 
+                title.split("交易所").length > 1||
+                title.split("巨鲸").length > 1||
+                title.split("ETF").length > 1||
+                title.split("SEC").length > 1||
+                title.split("币安").length > 1||
+                title.split("贝莱德").length > 1||
+                title.split("彭博").length > 1||
+                title.split("和解").length > 1
+                )
                 {
                     db.push(
                         {
